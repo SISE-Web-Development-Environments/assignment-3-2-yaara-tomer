@@ -3,11 +3,10 @@
 require("dotenv").config();
 var express = require("express");
 var path = require("path");
-var logger = require("morgan");
+var morgan = require("morgan");
 const session = require("client-sessions");
 //const cors = require("cors");
 const bodyParser = require("body-parser");
-const morgan = require("morgan"); // logging library
 
 
 //=========Routing import===================

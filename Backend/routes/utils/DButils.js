@@ -21,6 +21,7 @@ const poolConnect = pool
   .catch((err) => console.log(err));
 
 async function execQuery(query) {
+  //console.log(query);
   await poolConnect;
   try {
     var result = await pool.request().query(query);
@@ -37,6 +38,10 @@ async function getUserByUsername(username) {
       `SELECT * FROM Users WHERE username = '${username}'`
     )
   )[0];  
+
+  //parse user data back to object
+  user.Data = JSON.parse(user.Data);
+
   return user;  //TODO check what returns if not exist
 };
 
@@ -46,7 +51,11 @@ async function getUserByID(id) {
     `SELECT * FROM Users WHERE id = '${id}'`
     )
   )[0];
-  return user;//TODO check what returns if not exist
+
+  //parse user data back to object
+  user.Data = JSON.parse(user.Data);
+
+  return user; //TODO check what returns if not exist
   
 };
 
@@ -90,12 +99,13 @@ async function addUserToDB(body) {
   userData["lastname"]= body.lastname;
   userData["email"]=body.email;
   userData["profilePicture"]=body.profilePicture;
-  userData["favoriteRecipes"]={};
-  userData["watchedRecipes"]={};
+
+
+  let userDataString = JSON.stringify(userData);
 
   // add user to DB
   await execQuery(
-    `INSERT INTO Users VALUES ('${uuid}','${body.username}','${hash_password}', '${userData}')`
+    `INSERT INTO Users VALUES ('${uuid}','${body.username}','${hash_password}', '${userDataString}')`
   );
 };
 

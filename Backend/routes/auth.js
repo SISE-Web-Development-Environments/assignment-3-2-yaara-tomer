@@ -20,7 +20,7 @@ router.post("/register", async (req, res, next) => {
     await DButils.addUserToDB(req.body);
 
     res.status(201).send({ message: "user created", success: true });
-    //res.redirect("/auth/login");
+    //res.redirect("login"); //TODO ??
 
   } catch (error) {
     next(error);
@@ -44,8 +44,9 @@ router.post("/login", async (req, res, next) => {
     // Set cookie
     req.session.id = user.id;
 
+    
     // return cookie
-    res.status(200).send({ message: "login succeeded", success: true });
+    res.status(200).send({ message: "login succeeded", success: true ,user: user.Data});
   } catch (error) {
     next(error);
   }
