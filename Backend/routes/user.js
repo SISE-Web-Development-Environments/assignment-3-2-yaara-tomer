@@ -4,7 +4,7 @@ const axios = require("axios");
 const recipeUtils = require("./utils/recipesAPIutils");
 const DButils = require("./utils/DButils");
 
-//cookie middleware
+//cookie authentication middleware
 router.use(function (req, res, next) {
   if (req.session && req.session.id) {
     const id = req.session.id;
@@ -23,8 +23,22 @@ router.use(function (req, res, next) {
   }
 });
 
+ //TODO 
+router.get("/recipeInfo/:ids", function (req, res, next) {
+  try {
+    let ids = JSON.parse(req.params.ids);
+    let username = req.username;
+    console.log(ids,username);
+    //TODO extract meta info from DB
+    res.sendStatus(200);
+
+  } catch (error) {
+    next(error);
+  }
+});
+
 //TODO
-router.get("/getLastWatchedRecipesPreview", function (req, res, next) {
+router.get("/lastWatchedRecipesPreview", function (req, res, next) {
   try {
     let username = req.username;
     res.sendStatus(200);
@@ -35,7 +49,7 @@ router.get("/getLastWatchedRecipesPreview", function (req, res, next) {
 });
 
 //TODO
-router.get("/getFavoriteRecipesPreview", async (req, res, next) => {
+router.get("/favoriteRecipesPreview", async (req, res, next) => {
   try {
 
   } catch (error) {
@@ -44,7 +58,7 @@ router.get("/getFavoriteRecipesPreview", async (req, res, next) => {
 });
 
 //TODO
-router.get("/getAllPersonalRecipesPreview", function (req, res, next) {
+router.get("/PersonalRecipesPreview", function (req, res, next) {
   try {
 
   } catch (error) {
@@ -53,7 +67,7 @@ router.get("/getAllPersonalRecipesPreview", function (req, res, next) {
 });
 
 //TODO
-router.get("/getPersonalRecipeByid", async (req, res, next) => {
+router.get("/personalRecipeByid", async (req, res, next) => {
   try {
 
   } catch (error) {
@@ -62,7 +76,7 @@ router.get("/getPersonalRecipeByid", async (req, res, next) => {
 });
 
 //TODO
-router.get("/getAllFamilyRecipesPreview", function (req, res, next) {
+router.get("/FamilyRecipesPreview", function (req, res, next) {
   try {
 
   } catch (error) {
@@ -71,7 +85,7 @@ router.get("/getAllFamilyRecipesPreview", function (req, res, next) {
 });
 
 //TODO
-router.get("/getFamilyRecipeByid", async (req, res, next) => {
+router.get("/familyRecipeByid", async (req, res, next) => {
   try {
 
   } catch (error) {

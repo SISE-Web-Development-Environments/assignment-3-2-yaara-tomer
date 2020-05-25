@@ -6,7 +6,7 @@ const recipeUtils = require("./utils/recipesAPIutils");
 
 
 
-router.get("/getRandomRecipesPreview", function (req, res, next) {
+router.get("/randomRecipesPreview", function (req, res, next) {
   try {
 
   } catch (error) {
@@ -15,7 +15,7 @@ router.get("/getRandomRecipesPreview", function (req, res, next) {
 });
 
 
-router.get("/getFullRecipeByid", async (req, res, next) => {
+router.get("/fullRecipeByid", async (req, res, next) => {
   try {
 
   } catch (error) {

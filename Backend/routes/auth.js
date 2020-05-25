@@ -13,11 +13,11 @@ router.post("/register", async (req, res, next) => {
     // valid parameters
 
     // username exists
-    if (DButils.isUsernameExist(req.body.username))
+    if (await DButils.isUsernameExist(req.body.username))
       throw { status: 409, message: "Username taken" };
 
     //add new user to db
-    DButils.addUserToDB(req.body);
+    await DButils.addUserToDB(req.body);
 
     res.status(201).send({ message: "user created", success: true });
     //res.redirect("/auth/login");

@@ -78,7 +78,7 @@ async function addUserToDB(body) {
    
   //hash password
   let hash_password = bcrypt.hashSync(
-    req.body.password,
+    body.password,
     parseInt(process.env.bcrypt_saltRounds)
   );
 

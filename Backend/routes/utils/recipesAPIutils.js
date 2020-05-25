@@ -1,6 +1,7 @@
 
 require("dotenv").config();
 
+const axios = require("axios");
 const path = require("path");
 const api_domain = "https://api.spoonacular.com/recipes";
 
@@ -17,7 +18,7 @@ async function getSearchResults(params) {
         apiKey: process.env.spooncular_apiKey,
       },
     });
-    //save only preview data for each resolt
+    //save only preview data for each result
     let recipesPreview = await Promise.all(
         search_response.data.results.map((recipe_raw) =>
           getRecipePreview(recipe_raw.id)
@@ -27,24 +28,37 @@ async function getSearchResults(params) {
 }
 
 
-async function getRecipePreview(id) {
-    const getRecipe_response = await axios.get(`${api_domain}/${id}/information`, {
+async function getRecipePreview(recipe_id) {
+    const getRecipe_response = await axios.get(`${api_domain}/${recipe_id}/information`, {
       params: {
         includeNutrition: false,
         apiKey: process.env.spooncular_apiKey
       }
     });
-    let recipePreview = {}
-    recipePreview["id"] = getRecipe_response.data.id;
-    recipePreview["title"] = getRecipe_response.data.title;
-    recipePreview["image"] = getRecipe_response.data.image;
-    recipePreview["readyInMinutes"] = getRecipe_response.data.readyInMinutes;
-    recipePreview["vegan"] = getRecipe_response.data.vegan;
-    recipePreview["vegetarian"] = getRecipe_response.data.vegetarian;
-    recipePreview["glutenFree"] = getRecipe_response.data.glutenFree;
-    recipePreview["aggregateLikes"] = getRecipe_response.data.aggregateLikes;
+
+    const {
+      id,
+      title,
+      image,
+      readyInMinutes,
+      vegan,
+      vegetarian,
+      glutenFree,
+      aggregateLikes,
+    } = getRecipe_response.data;
+
+    return {
+      id : id,
+      title : title,
+      image : image,
+      readyInMinutes:readyInMinutes,
+      vegan:vegan,
+      vegetarian:vegetarian,
+      glutenFree:glutenFree,
+      aggregateLikes:aggregateLikes,
+    };
   
-    return recipePreview; 
+  
   }
 
 
