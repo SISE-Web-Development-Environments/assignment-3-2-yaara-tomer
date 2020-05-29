@@ -41,6 +41,8 @@ async function getUserByUsername(username) {
 
   //parse user data back to object
   user.Data = JSON.parse(user.Data);
+  user.wathced =  JSON.parse(user.wathced );
+  user.favorite =  JSON.parse(user.favorite );
 
   return user;  //TODO check what returns if not exist
 };
@@ -54,6 +56,8 @@ async function getUserByID(id) {
 
   //parse user data back to object
   user.Data = JSON.parse(user.Data);
+  user.wathced =  JSON.parse(user.wathced );
+  user.favorite =  JSON.parse(user.favorite );
 
   return user; //TODO check what returns if not exist
   
@@ -93,19 +97,21 @@ async function addUserToDB(body) {
 
   //init userDAta
   let userData = {};
-
   userData["username"] = body.username;
   userData["firstname"]= body.firstname;
   userData["lastname"]= body.lastname;
   userData["email"]=body.email;
   userData["profilePicture"]=body.profilePicture;
 
-
   let userDataString = JSON.stringify(userData);
+
+  let wathced = JSON.stringify([]);
+  let favorite = JSON.stringify([]);
+
 
   // add user to DB
   await execQuery(
-    `INSERT INTO Users VALUES ('${uuid}','${body.username}','${hash_password}', '${userDataString}')`
+    `INSERT INTO Users VALUES ('${uuid}','${body.username}','${hash_password}', '${userDataString}','${wathced}','${favorite}')`
   );
 };
 

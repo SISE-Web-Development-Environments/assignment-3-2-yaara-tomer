@@ -24,7 +24,7 @@ router.use(function (req, res, next) {
 });
 
  //TODO 
-router.get("/recipeInfo/:ids", function (req, res, next) {
+router.get("/recipeInfo/:ids", async (req, res, next) => {
   try {
     let ids = JSON.parse(req.params.ids);
     let username = req.username;
@@ -38,7 +38,7 @@ router.get("/recipeInfo/:ids", function (req, res, next) {
 });
 
 //TODO
-router.get("/lastWatchedRecipesPreview", function (req, res, next) {
+router.get("/lastWatchedRecipesPreview", async (req, res, next) => {
   try {
     let username = req.username;
     res.sendStatus(200);
@@ -58,7 +58,7 @@ router.get("/favoriteRecipesPreview", async (req, res, next) => {
 });
 
 //TODO
-router.get("/PersonalRecipesPreview", function (req, res, next) {
+router.get("/PersonalRecipesPreview", async (req, res, next) => {
   try {
 
   } catch (error) {
@@ -76,7 +76,7 @@ router.get("/personalRecipeByid", async (req, res, next) => {
 });
 
 //TODO
-router.get("/FamilyRecipesPreview", function (req, res, next) {
+router.get("/FamilyRecipesPreview", async (req, res, next) => {
   try {
 
   } catch (error) {
@@ -103,7 +103,7 @@ router.post("/markAsFavorite", async (req, res, next) => {
 });
 
 //TODO
-router.post("/markAsWatched", function (req, res, next) {
+router.post("/markAsWatched", async (req, res, next) => {
   try {
 
   } catch (error) {

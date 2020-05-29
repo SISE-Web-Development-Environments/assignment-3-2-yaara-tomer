@@ -30,7 +30,7 @@ router.post("/register", async (req, res, next) => {
 router.post("/login", async (req, res, next) => {
   try {
     // check that username exists
-    if (!DButils.isUsernameExist(req.body.username))
+    if (! await DButils.isUsernameExist(req.body.username))
       throw { status: 401, message: "Username or Password incorrect" };
 
     //get user from DB
