@@ -23,15 +23,24 @@ router.use(function (req, res, next) {
   }
 });
 
- //TODO 
 router.get("/recipeInfo/:ids", async (req, res, next) => {
   try {
     let ids = JSON.parse(req.params.ids);
-    let username = req.username;
-    console.log(ids,username);
-    //TODO extract meta info from DB
-    res.sendStatus(200);
 
+    let recipes_metaInfo = {};
+
+    await Promise.all(
+      ids.map((recipe_id) =>
+      DButils.getRecipeFavoriteAndWatchedInfo(req.username,recipe_id)
+      .then((value) => {
+        recipes_metaInfo[recipe_id]=value;
+      })
+      )
+    );
+
+    
+
+    res.status(200).send(recipes_metaInfo);
   } catch (error) {
     next(error);
   }
@@ -57,7 +66,15 @@ router.get("/lastWatchedRecipesPreview", async (req, res, next) => {
 //TODO
 router.get("/favoriteRecipesPreview", async (req, res, next) => {
   try {
+    let favorite_ids = await DButils.getFavoriteRecipes(req.username)
 
+    let favorite_preview = await Promise.all(
+      favorite_ids.map((recipe) =>
+      recipeUtils.getRecipePreview(recipe.recipe_id)
+      )
+    );
+
+    res.status(200).send(favorite_preview);
   } catch (error) {
     next(error);
   }
