@@ -119,6 +119,40 @@ async function removeRecipeFromFavorite(username,recipeid){
     );
 };
 
+async function getRecipeFavoriteAndWatchedInfo(username,recipe_id){
+  let [watched, favorite] = await Promise.all([
+    execQuery(
+      `SELECT 1 FROM Watched WHERE recipe_id= '${recipe_id}' and username ='${username}'`
+    ),
+    execQuery(
+      `SELECT 1 FROM Favorite WHERE recipe_id= '${recipe_id}' and username ='${username}'`
+    )
+  ]);
+  let recipeInfo={};
+
+  //watched info
+  if(watched.length>0)
+    recipeInfo.watched=true;
+  else
+    recipeInfo.watched=false;
+  
+      //watched info
+  if(favorite.length>0)
+    recipeInfo.favorite=true;
+  else
+    recipeInfo.favorite=false;
+
+
+  return recipeInfo;
+
+
+}
+
+async function getFavoriteRecipes(username){
+  return await execQuery(
+    `SELECT recipe_id FROM Favorite WHERE username = '${username}'`
+  );
+}
 
 process.on("SIGINT", function () {
   if (pool) {
@@ -126,6 +160,7 @@ process.on("SIGINT", function () {
   }
 });
 
+exports.getFavoriteRecipes = getFavoriteRecipes;
 exports.getUserByUsername = getUserByUsername;
 exports.isUsernameExist = isUsernameExist;
 exports.isIDExist = isIDExist;
@@ -135,6 +170,7 @@ exports.markRecipeAsWatched = markRecipeAsWatched;
 exports.getlastWatchedRecipes = getlastWatchedRecipes;
 exports.addRecipeToFavorite = addRecipeToFavorite;
 exports.removeRecipeFromFavorite = removeRecipeFromFavorite;
+exports.getRecipeFavoriteAndWatchedInfo = getRecipeFavoriteAndWatchedInfo;
 
 
 

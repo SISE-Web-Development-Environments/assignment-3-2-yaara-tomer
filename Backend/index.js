@@ -5,7 +5,7 @@ var express = require("express");
 var path = require("path");
 var morgan = require("morgan");
 const session = require("client-sessions");
-//const cors = require("cors");
+const cors = require("cors");
 const bodyParser = require("body-parser");
 
 
@@ -23,7 +23,7 @@ var app = express();
 var port = process.env.PORT || "3000";
 
 //set cores to all origen
-//app.use(cors()); //TODO
+app.use(cors()); 
 //parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
