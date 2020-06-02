@@ -96,28 +96,20 @@ async function addUserToDB(body) {
   );
 
   //init userDAta
-  let userData = {};
-  userData["username"] = body.username;
-  userData["firstname"]= body.firstname;
+
+  body.username;
+  ;
   userData["lastname"]= body.lastname;
   userData["email"]=body.email;
   userData["profilePicture"]=body.profilePicture;
 
-  let userDataString = JSON.stringify(userData);
-
-  let wathced = JSON.stringify([]);
-  let favorite = JSON.stringify([]);
-
-
   // add user to DB
   await execQuery(
-    `INSERT INTO Users VALUES ('${uuid}','${body.username}','${hash_password}', '${userDataString}','${wathced}','${favorite}')`
+    `INSERT INTO Users VALUES ('${uuid}','${body.username}','${hash_password}', '${body.firstname}', '${body.lastname}','${body.email}','${body.profilePicture}')`
   );
 };
 
-async function funcName(param) {
 
-};
 
 process.on("SIGINT", function () {
   if (pool) {

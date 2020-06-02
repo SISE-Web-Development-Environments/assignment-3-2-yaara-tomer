@@ -46,7 +46,7 @@ router.post("/login", async (req, res, next) => {
 
     
     // return cookie
-    res.status(200).send({ message: "login succeeded", success: true ,user: user.Data});
+    res.status(200).send({ message: "login succeeded", success: true});
   } catch (error) {
     next(error);
   }
