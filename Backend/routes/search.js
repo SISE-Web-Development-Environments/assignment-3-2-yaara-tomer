@@ -6,7 +6,6 @@ const recipeUtils = require("./utils/recipesAPIutils");
 
 
 
-//#region example1 - make serach endpoint
 router.get("/", async (req, res, next) => {
   try {
     const search_results = await recipeUtils.getSearchResults(req.query);
@@ -15,7 +14,6 @@ router.get("/", async (req, res, next) => {
     next(error);
   }
 });
-//#endregion
 
 
 
