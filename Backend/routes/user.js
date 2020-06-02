@@ -37,11 +37,17 @@ router.get("/recipeInfo/:ids", async (req, res, next) => {
   }
 });
 
-//TODO
 router.get("/lastWatchedRecipesPreview", async (req, res, next) => {
   try {
-    let username = req.username;
-    res.sendStatus(200);
+    let lastWatched_ids = await DButils.getlastWatchedRecipes(req.username)
+
+    let lastWatched_preview = await Promise.all(
+      lastWatched_ids.map((recipe) =>
+      recipeUtils.getRecipePreview(recipe.id)
+      )
+    );
+
+    res.status(200).send(lastWatched_preview);
 
   } catch (error) {
     next(error);
@@ -93,30 +99,37 @@ router.get("/familyRecipeByid", async (req, res, next) => {
   }
 });
 
-//TODO
 router.post("/markAsFavorite", async (req, res, next) => {
   try {
-
+    let recipeID = req.query.id;
+    await DButils.addRecipeToFavorite(req.username, recipeID);
+    res.sendStatus(200);
   } catch (error) {
-    next(error);
+    if (error.number === 2627)
+      res.sendStatus(200);
+    else next(error);
   }
 });
 
-//TODO
 router.post("/removeFromFavorite", async (req, res, next) => {
   try {
-
+    let recipeID = req.query.id;
+    await DButils.removeRecipeFromFavorite(req.username, recipeID);
+    res.sendStatus(200);
   } catch (error) {
     next(error);
   }
 });
 
-//TODO
 router.post("/markAsWatched", async (req, res, next) => {
   try {
-
+    await DButils.markRecipeAsWatched(req.query.id, req.username);
+    res.sendStatus(200);
   } catch (error) {
-    next(error);
+    //ignore error if its duplicate request (recipe already watched)
+    if (error.number === 2627)//"Violation of PRIMARY KEY constraint 'PK'. Cannot insert duplicate key in object 'dbo.Watched'. The duplicate key value is (1234, israelLevi34)."
+      res.sendStatus(200);
+    else next(error);
   }
 });
 
@@ -129,27 +142,30 @@ router.post("/addRecipe", async (req, res, next) => {
   }
 });
 
-//TODO
 router.get("/userInfo", async (req, res, next) => {
   try {
         let user = await DButils.getUserByUsername(req.username);
         const {
           username,
-          firsname,
+          firstname,
           lastname,
           email,
           profilePicture,
           country
         } = user;
-        return {
+
+        let userInfoToReturn= {
           username:username,
-          firsname:firsname,
+          firstname:firstname,
           lastname:lastname,
           email:email,
           profilePicture:profilePicture,
           country:country
         };
         
+        res.status(200).send(userInfoToReturn);
+
+
       } catch (error) {
     next(error);
   }

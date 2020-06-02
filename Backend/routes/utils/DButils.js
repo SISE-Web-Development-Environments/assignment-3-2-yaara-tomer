@@ -91,6 +91,33 @@ async function addUserToDB(body) {
   );
 };
 
+async function markRecipeAsWatched(recipeID , username) {
+  // add recipe to watched list. if already exist, update timestamp
+  await execQuery(
+    `IF EXISTS(select * from Watched where recipe_id='${recipeID}' and username='${username}')
+        update Watched set recipe_id='${recipeID}' where recipe_id='${recipeID}' and username='${username}'
+    ELSE
+        insert into Watched (recipe_id,username,ts) VALUES ('${recipeID}','${username}',DEFAULT)`
+  );
+};
+
+async function getlastWatchedRecipes(username){
+  return await execQuery(
+    `select top 3 recipe_id as id from watched where username='${username}' ORDER BY ts DESC `
+  );
+};
+
+async function addRecipeToFavorite(username,recipeid){
+  await execQuery(
+    `INSERT INTO Favorite VALUES ('${recipeid}','${username}')`
+    );
+};
+
+async function removeRecipeFromFavorite(username,recipeid){
+  await execQuery(
+    `DELETE FROM Favorite WHERE recipe_id= '${recipeid}' and username ='${username}'`
+    );
+};
 
 
 process.on("SIGINT", function () {
@@ -104,6 +131,10 @@ exports.isUsernameExist = isUsernameExist;
 exports.isIDExist = isIDExist;
 exports.addUserToDB = addUserToDB;
 exports.getUserByID = getUserByID;
+exports.markRecipeAsWatched = markRecipeAsWatched;
+exports.getlastWatchedRecipes = getlastWatchedRecipes;
+exports.addRecipeToFavorite = addRecipeToFavorite;
+exports.removeRecipeFromFavorite = removeRecipeFromFavorite;
 
 
 
