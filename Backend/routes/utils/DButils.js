@@ -94,15 +94,7 @@ async function addUserToDB(body) {
     body.password,
     parseInt(process.env.bcrypt_saltRounds)
   );
-
-  //init userDAta
-
-  body.username;
-  ;
-  userData["lastname"]= body.lastname;
-  userData["email"]=body.email;
-  userData["profilePicture"]=body.profilePicture;
-
+  
   // add user to DB
   await execQuery(
     `INSERT INTO Users VALUES ('${uuid}','${body.username}','${hash_password}', '${body.firstname}', '${body.lastname}','${body.email}','${body.profilePicture}')`
