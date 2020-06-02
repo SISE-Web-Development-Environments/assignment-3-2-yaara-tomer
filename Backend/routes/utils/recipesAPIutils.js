@@ -5,16 +5,23 @@ const path = require("path");
 const api_domain = "https://api.spoonacular.com/recipes";
 
 async function getRandomRecipes() {
-  const search_response = await axios.get(`${api_domain}/random`, {
+  let search_response = await axios.get(`${api_domain}/random`, {
     params: {
       number: 3,
       apiKey: process.env.spooncular_apiKey,
     },
   });
 
+  //change recipe if instructions not exist
+  search_response = await Promise.all(
+    search_response.data.recipes.map((recipe_raw) =>
+    verifyInstruction(recipe_raw)
+    )
+  );
+  
   //save only preview data for each result
   let recipesPreview = await Promise.all(
-    search_response.data.recipes.map((recipe_raw) =>
+    search_response.map((recipe_raw) =>
       extractPreviewFromFullRecipe(recipe_raw)
     )
   );
@@ -182,6 +189,26 @@ async function extractRelevantDataFromStep(Astep) {
     number:number,
     step:step,
   };
+}
+
+async function verifyInstruction(recipe){
+  if (recipe && recipe.instructions && recipe.instructions === "") {
+    while (recipe.instructions === "") {
+      recipe = await replaceRandomRecipe();
+    }
+  }
+  return recipe
+}
+
+async function replaceRandomRecipe(){
+  const search_response = await axios.get(`${api_domain}/random`, {
+    params: {
+      number: 1,
+      apiKey: process.env.spooncular_apiKey,
+    },
+  });
+
+  return search_response.data.recipes[0]
 }
 
 

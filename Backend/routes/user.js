@@ -103,6 +103,15 @@ router.post("/markAsFavorite", async (req, res, next) => {
 });
 
 //TODO
+router.post("/removeFromFavorite", async (req, res, next) => {
+  try {
+
+  } catch (error) {
+    next(error);
+  }
+});
+
+//TODO
 router.post("/markAsWatched", async (req, res, next) => {
   try {
 
@@ -116,6 +125,32 @@ router.post("/addRecipe", async (req, res, next) => {
   try {
 
   } catch (error) {
+    next(error);
+  }
+});
+
+//TODO
+router.get("/userInfo", async (req, res, next) => {
+  try {
+        let user = await DButils.getUserByUsername(req.username);
+        const {
+          username,
+          firsname,
+          lastname,
+          email,
+          profilePicture,
+          country
+        } = user;
+        return {
+          username:username,
+          firsname:firsname,
+          lastname:lastname,
+          email:email,
+          profilePicture:profilePicture,
+          country:country
+        };
+        
+      } catch (error) {
     next(error);
   }
 });

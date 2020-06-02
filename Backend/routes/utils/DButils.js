@@ -39,11 +39,6 @@ async function getUserByUsername(username) {
     )
   )[0];  
 
-  //parse user data back to object
-  user.Data = JSON.parse(user.Data);
-  user.wathced =  JSON.parse(user.wathced );
-  user.favorite =  JSON.parse(user.favorite );
-
   return user;  //TODO check what returns if not exist
 };
 
@@ -53,11 +48,6 @@ async function getUserByID(id) {
     `SELECT * FROM Users WHERE id = '${id}'`
     )
   )[0];
-
-  //parse user data back to object
-  user.Data = JSON.parse(user.Data);
-  user.wathced =  JSON.parse(user.wathced );
-  user.favorite =  JSON.parse(user.favorite );
 
   return user; //TODO check what returns if not exist
   
@@ -94,10 +84,10 @@ async function addUserToDB(body) {
     body.password,
     parseInt(process.env.bcrypt_saltRounds)
   );
-  
+
   // add user to DB
   await execQuery(
-    `INSERT INTO Users VALUES ('${uuid}','${body.username}','${hash_password}', '${body.firstname}', '${body.lastname}','${body.email}','${body.profilePicture}')`
+    `INSERT INTO Users VALUES ('${uuid}','${body.username}','${hash_password}', '${body.firstname}', '${body.lastname}','${body.email}','${body.profilePicture}','${body.country}')`
   );
 };
 
