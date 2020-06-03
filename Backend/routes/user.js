@@ -48,7 +48,7 @@ router.get("/recipeInfo/:ids", async (req, res, next) => {
 
 router.get("/lastWatchedRecipesPreview", async (req, res, next) => {
   try {
-    let lastWatched_ids = await DButils.getlastWatchedRecipes(req.username)
+    let lastWatched_ids = await DButils.getlastWatchedRecipesIDs(req.username)
 
     let lastWatched_preview = await Promise.all(
       lastWatched_ids.map((recipe) =>
@@ -63,10 +63,9 @@ router.get("/lastWatchedRecipesPreview", async (req, res, next) => {
   }
 });
 
-//TODO
 router.get("/favoriteRecipesPreview", async (req, res, next) => {
   try {
-    let favorite_ids = await DButils.getFavoriteRecipes(req.username)
+    let favorite_ids = await DButils.getFavoriteRecipesID(req.username)
 
     let favorite_preview = await Promise.all(
       favorite_ids.map((recipe) =>
@@ -80,37 +79,54 @@ router.get("/favoriteRecipesPreview", async (req, res, next) => {
   }
 });
 
-//TODO
 router.get("/PersonalRecipesPreview", async (req, res, next) => {
   try {
-
+    let previews = await DButils.getPersonalRecipesPreview(req.username);
+    res.status(200).send(previews);
   } catch (error) {
     next(error);
   }
 });
 
-//TODO
 router.get("/personalRecipeByid", async (req, res, next) => {
   try {
+    let recipe = await DButils.getPersonalRecipeByID(req.query.id); 
 
+    //verify recipe belong to user
+    if(recipe.username !== req.username)
+      res.sendStatus(400);
+
+
+    let recipeDate = JSON.parse(recipe.recipeData);
+    recipeDate.id=recipe.id;
+    
+    res.status(200).send(recipeDate);
   } catch (error) {
     next(error);
   }
 });
 
-//TODO
 router.get("/FamilyRecipesPreview", async (req, res, next) => {
   try {
+    let previews = await DButils.getFamilyRecipesPreview(req.username);
+    res.status(200).send(previews);
 
   } catch (error) {
     next(error);
   }
 });
 
-//TODO
 router.get("/familyRecipeByid", async (req, res, next) => {
   try {
+    let recipe = await DButils.getFamilyRecipeByID(req.query.id);
 
+    //verify recipe belong to user
+    if (recipe.username !== req.username) res.sendStatus(400);
+
+    let recipeDate = JSON.parse(recipe.recipeData);
+    recipeDate.id = recipe.id;
+
+    res.status(200).send(recipeDate);
   } catch (error) {
     next(error);
   }
@@ -150,10 +166,10 @@ router.post("/markAsWatched", async (req, res, next) => {
   }
 });
 
-//TODO
 router.post("/addRecipe", async (req, res, next) => {
   try {
-
+    await DButils.addPersonalRecipeToDB(req.body,req.username);    
+    res.sendStatus(201);
   } catch (error) {
     next(error);
   }
