@@ -101,7 +101,7 @@ async function markRecipeAsWatched(recipeID , username) {
   );
 };
 
-async function getlastWatchedRecipes(username){
+async function getlastWatchedRecipesIDs(username){
   return await execQuery(
     `select top 3 recipe_id as id from watched where username='${username}' ORDER BY ts DESC `
   );
@@ -148,10 +148,91 @@ async function getRecipeFavoriteAndWatchedInfo(username,recipe_id){
 
 }
 
-async function getFavoriteRecipes(username){
+async function getFavoriteRecipesID(username){
   return await execQuery(
     `SELECT recipe_id FROM Favorite WHERE username = '${username}'`
   );
+}
+
+async function addPersonalRecipeToDB(personalRecipe,username) {
+  //generate recipe id
+  let uuid = uuidv1();
+
+  //stringify recipe data
+  let recipeAsString = JSON.stringify(personalRecipe);
+
+   // add recipe to DB
+   await execQuery(
+    `INSERT INTO PersonalRecipes VALUES ('${uuid}','${username}','${recipeAsString}')`
+  );
+}
+
+async function getPersonalRecipeByID(personalRecipe_id){
+ 
+  let getRecipe_response = await execQuery(
+    `SELECT * FROM PersonalRecipes WHERE id = '${personalRecipe_id}'`
+  );
+  return getRecipe_response[0];
+}
+
+async function getFamilyRecipeByID(familyRecipe_id){
+ 
+  let getRecipe_response = await execQuery(
+    `SELECT * FROM FamilyRecipes WHERE id = '${familyRecipe_id}'`
+  );
+  return getRecipe_response[0];
+}
+
+async function getPersonalRecipesPreview(username){
+ 
+  let getPersonalRecipe_response = await execQuery(
+    `SELECT * FROM PersonalRecipes WHERE username = '${username}'`
+  );
+  
+  //extract only preview data for each result
+  getPersonalRecipe_response = await Promise.all(
+    getPersonalRecipe_response.map((personalRecipe) =>
+    extractPreviewFromFullRecipe(personalRecipe)
+    )
+  );
+  return getPersonalRecipe_response;
+}
+
+async function getFamilyRecipesPreview(username){
+ 
+  let getFamilyRecipe_response = await execQuery(
+    `SELECT * FROM FamilyRecipes WHERE username = '${username}'`
+  );
+
+  //extract only preview data for each result
+  getFamilyRecipe_response = await Promise.all(
+    getFamilyRecipe_response.map((familyRecipe) =>
+    extractPreviewFromFullRecipe(familyRecipe)
+    )
+  );
+  return getFamilyRecipe_response;
+}
+
+async function extractPreviewFromFullRecipe(recipe) {
+  const {
+    title,
+    image,
+    readyInMinutes,
+    vegan,
+    vegetarian,
+    glutenFree,
+  } = JSON.parse(recipe.recipeData);
+
+  return {
+    id: recipe.id,
+    title: title,
+    image: image,
+    readyInMinutes: readyInMinutes,
+    vegan: vegan,
+    vegetarian: vegetarian,
+    glutenFree: glutenFree,
+    aggregateLikes: 0
+  };
 }
 
 process.on("SIGINT", function () {
@@ -160,14 +241,19 @@ process.on("SIGINT", function () {
   }
 });
 
-exports.getFavoriteRecipes = getFavoriteRecipes;
+exports.getPersonalRecipesPreview = getPersonalRecipesPreview;
+exports.getFamilyRecipesPreview = getFamilyRecipesPreview;
+exports.getFamilyRecipeByID = getFamilyRecipeByID;
+exports.addPersonalRecipeToDB = addPersonalRecipeToDB;
+exports.getPersonalRecipeByID = getPersonalRecipeByID;
+exports.getFavoriteRecipes = getFavoriteRecipesID;
 exports.getUserByUsername = getUserByUsername;
 exports.isUsernameExist = isUsernameExist;
 exports.isIDExist = isIDExist;
 exports.addUserToDB = addUserToDB;
 exports.getUserByID = getUserByID;
 exports.markRecipeAsWatched = markRecipeAsWatched;
-exports.getlastWatchedRecipes = getlastWatchedRecipes;
+exports.getlastWatchedRecipes = getlastWatchedRecipesIDs;
 exports.addRecipeToFavorite = addRecipeToFavorite;
 exports.removeRecipeFromFavorite = removeRecipeFromFavorite;
 exports.getRecipeFavoriteAndWatchedInfo = getRecipeFavoriteAndWatchedInfo;
