@@ -26,7 +26,12 @@ router.use(function (req, res, next) {
 router.get("/recipeInfo/:ids", async (req, res, next) => {
   try {
     let ids = JSON.parse(req.params.ids);
+    let tmp = ids.some(isNaN);
+    if(!Array.isArray(ids) || ids.length==0 ||ids.some(isNaN)){
+      res.status(400).send({ message: "bad parameters.please provide an array with numeric ids", success: false });
 
+    }
+    else{
     let recipes_metaInfo = {};
 
     await Promise.all(
@@ -37,10 +42,9 @@ router.get("/recipeInfo/:ids", async (req, res, next) => {
       })
       )
     );
-
-    
-
     res.status(200).send(recipes_metaInfo);
+  }
+
   } catch (error) {
     next(error);
   }
@@ -92,15 +96,17 @@ router.get("/personalRecipeByid", async (req, res, next) => {
   try {
     let recipe = await DButils.getPersonalRecipeByID(req.query.id); 
 
-    //verify recipe belong to user
-    if(recipe.username !== req.username)
+    //verify recipe exist and belong to user
+    if(!recipe || recipe.username !== req.username){
       res.sendStatus(400);
+    }
+    else{
+      let recipeDate = JSON.parse(recipe.recipeData);
+      recipeDate.id=recipe.id;
+      
+      res.status(200).send(recipeDate);
+    }
 
-
-    let recipeDate = JSON.parse(recipe.recipeData);
-    recipeDate.id=recipe.id;
-    
-    res.status(200).send(recipeDate);
   } catch (error) {
     next(error);
   }
@@ -120,13 +126,18 @@ router.get("/familyRecipeByid", async (req, res, next) => {
   try {
     let recipe = await DButils.getFamilyRecipeByID(req.query.id);
 
-    //verify recipe belong to user
-    if (recipe.username !== req.username) res.sendStatus(400);
+    //verify  recipe exist and belong to user
+    if (!recipe || recipe.username !== req.username){
+      res.sendStatus(400);
+    } 
+    else{
+      let recipeDate = JSON.parse(recipe.recipeData);
+      recipeDate.id = recipe.id;
+  
+      res.status(200).send(recipeDate);
+    }
 
-    let recipeDate = JSON.parse(recipe.recipeData);
-    recipeDate.id = recipe.id;
-
-    res.status(200).send(recipeDate);
+    
   } catch (error) {
     next(error);
   }
