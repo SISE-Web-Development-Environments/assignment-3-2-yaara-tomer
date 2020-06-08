@@ -1,0 +1,917 @@
+openapi: 3.0.0
+info:
+  title: Recipe Site API
+  description: this is our Recipe Site API
+  contact:
+    email: godellit@post.bgu.ac.il.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.1
+servers:
+- url: https://virtserver.swaggerhub.com/TomerGodelli/RecipeSite/1.0.0
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: authentication
+  description: Operations for users authentication
+- name: public
+  description: Operations for public recipes requests
+- name: user
+  description: Operations for loged in users recipes and meta data requests (favorite,wathced
+    etc..)
+- name: search
+  description: Operations for searching recipes requests
+paths:
+  /login:
+    post:
+      tags:
+      - authentication
+      summary: Logs in and returns the authentication  cookie
+      description: send login request to the system
+      operationId: login
+      requestBody:
+        description: A JSON object containing the login and password.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        "200":
+          description: |
+            Successfully authenticated. The session ID is returned in a cookie named `SESSIONID`. You need to include this cookie in subsequent requests.
+          headers:
+            Set-Cookie:
+              style: simple
+              explode: false
+              schema:
+                type: string
+                example: SESSIONID=abcde12345;
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "401":
+          description: |
+            Authentication failed. Please check your username/password.
+      security: []
+  /logout:
+    post:
+      tags:
+      - authentication
+      summary: Logs out from app
+      description: send logout request to the system
+      operationId: logoutget
+      responses:
+        "200":
+          description: User Successfully loged out.
+          headers:
+            Set-Cookie:
+              style: simple
+              explode: false
+              schema:
+                type: string
+                example: SESSIONID=abcde12345; Path=/; HttpOnly
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+      security:
+      - cookieUserAuth: []
+  /register:
+    post:
+      tags:
+      - authentication
+      summary: new user registration
+      description: send register request to the system
+      operationId: register
+      requestBody:
+        description: A JSON object containing the register form.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      responses:
+        "201":
+          description: New User Successfully registered and created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_201'
+        "409":
+          description: the request could not be processed because of conflict in the
+            current state. Registration failed. username already exists.
+      security: []
+  /recipes/randomRecipesPreview:
+    get:
+      tags:
+      - public
+      summary: get random recipes preview
+      description: send request to get 3 random recipes preview
+      operationId: getRandomRecipesPreview
+      responses:
+        "200":
+          description: return the requested numer of random recipes preview
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecipePreview'
+        "400":
+          description: bad input parameter
+      security: []
+  /recipes/fullRecipeByid:
+    get:
+      tags:
+      - public
+      summary: get recipe by id
+      description: send request to get full recipe of a given id
+      operationId: publicgetFullRecipeByid
+      parameters:
+      - name: id
+        in: query
+        description: id of wanted recipes
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: number
+      responses:
+        "200":
+          description: return the full recipe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recipe'
+        "400":
+          description: bad input parameter
+      security: []
+  /user/recipeInfo/{ids}:
+    get:
+      tags:
+      - user
+      summary: get recipes watched and favorite properties by  recipes ids
+      description: send request to get watched and favorite properties for recipes
+      operationId: recipesInfo
+      parameters:
+      - name: ids
+        in: path
+        description: id of wanted recipe
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: array
+          items:
+            type: number
+        example:
+        - 25673
+        - 65437
+        - 86789
+      responses:
+        "200":
+          description: return watched and favorite properties for recipes
+          content:
+            application/json:
+              schema:
+                type: array
+                example:
+                  "25673":
+                    watched: true
+                    favorite: false
+                  "65437":
+                    watched: true
+                    favorite: false
+                  "86789":
+                    watched: true
+                    favorite: false
+                items:
+                  $ref: '#/components/schemas/recipesMetaInfo'
+        "400":
+          description: bad input parameter
+      security:
+      - cookieUserAuth: []
+  /user/lastWatchedRecipesPreview:
+    get:
+      tags:
+      - user
+      summary: get recently viewd recipes
+      description: send request to get 3 most recently viewd recipes of user
+      operationId: getLastWatchedRecipesPreview
+      responses:
+        "200":
+          description: return the 3 most recently viewd recipes preview
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecipePreview'
+      security:
+      - cookieUserAuth: []
+  /user/favoriteRecipesPreview:
+    get:
+      tags:
+      - user
+      summary: get favorite recipes
+      description: send request to all users favorite recipes preview
+      operationId: getFavoriteRecipesPreview
+      responses:
+        "200":
+          description: return all users favorite recipes preview
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecipePreview'
+      security:
+      - cookieUserAuth: []
+  /user/personalRecipesPreview:
+    get:
+      tags:
+      - user
+      summary: get all personal recipes preview
+      description: send request to get all users personal recipes preview
+      operationId: getAllPersonalRecipesPreview
+      responses:
+        "200":
+          description: return all users personal recipes preview
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecipePreview'
+      security:
+      - cookieUserAuth: []
+  /user/personalRecipeByid:
+    get:
+      tags:
+      - user
+      summary: get personal recipe by id
+      description: send request to get full personal recipe of a given id
+      operationId: getPersonalRecipeByid
+      parameters:
+      - name: id
+        in: query
+        description: id of wanted recipe
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 1ff110e0-a58f-11ea-b9f4-53bc4ac9380b
+      responses:
+        "200":
+          description: return the full recipe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonalRecipe'
+        "400":
+          description: bad input parameter
+      security:
+      - cookieUserAuth: []
+  /user/familyRecipesPreview:
+    get:
+      tags:
+      - user
+      summary: get all family recipes preview
+      description: send request to get all users family recipes preview
+      operationId: getAllFamilyRecipesPreview
+      responses:
+        "200":
+          description: return all users personal recipes preview
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecipePreview'
+      security:
+      - cookieUserAuth: []
+  /user/familyRecipeByid:
+    get:
+      tags:
+      - user
+      summary: get family recipe by id
+      description: send request to get full family recipe of a given id
+      operationId: getFamilyRecipeByid
+      parameters:
+      - name: id
+        in: query
+        description: id of wanted recipe
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 1ff110e0-a58f-11ea-b9f4-53bc4ac9380b
+      responses:
+        "200":
+          description: return the full recipe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyRecipe'
+        "400":
+          description: bad input parameter
+      security:
+      - cookieUserAuth: []
+  /user/userInfo:
+    get:
+      tags:
+      - user
+      summary: get user details
+      description: send request to get all information of the user
+      operationId: getUsersDetails
+      responses:
+        "200":
+          description: return user details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInfo'
+        "400":
+          description: bad input parameter
+      security:
+      - cookieUserAuth: []
+  /user/markAsFavorite:
+    post:
+      tags:
+      - user
+      summary: mark a recipe as users favorite
+      description: send request to mark a recipe as user favorite
+      operationId: markAsFavorite
+      parameters:
+      - name: id
+        in: query
+        description: id of wanted recipe
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: number
+          example: 716409
+      responses:
+        "200":
+          description: The recipe marked as user favorite
+        "400":
+          description: bad input parameter
+      security:
+      - cookieUserAuth: []
+  /user/removeFromFavorite:
+    post:
+      tags:
+      - user
+      summary: remove a recipe from users favorite
+      description: send request to delete recipe as user favorite
+      operationId: removeFromFavorite
+      parameters:
+      - name: id
+        in: query
+        description: id of wanted recipe
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: number
+          example: 716409
+      responses:
+        "200":
+          description: The recipe remove from user favorite's
+        "404":
+          description: recipe not found
+      security:
+      - cookieUserAuth: []
+  /user/markAsWatched:
+    post:
+      tags:
+      - user
+      summary: mark a recipe as watched
+      description: send request to mark a recipe as watched
+      operationId: markAsWatched
+      parameters:
+      - name: id
+        in: query
+        description: id of wanted recipe
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: number
+          example: 716409
+      responses:
+        "200":
+          description: The recipe marked sucssesfully
+        "400":
+          description: bad input parameter
+      security:
+      - cookieUserAuth: []
+  /user/addRecipe:
+    post:
+      tags:
+      - user
+      summary: add new user personal recipe to
+      description: send new personal recipe to
+      operationId: addRecipe
+      requestBody:
+        description: A JSON object containing the login and password.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PersonalRecipe'
+        required: true
+      responses:
+        "201":
+          description: Successfully added the new recipe.
+        "401":
+          description: Addition failed.
+      security:
+      - cookieUserAuth: []
+  /search:
+    get:
+      tags:
+      - search
+      summary: send recipes search query
+      description: send request to list of recipes by query and filters options
+      operationId: search
+      parameters:
+      - name: q
+        in: query
+        description: main query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: "n"
+        in: query
+        description: number of wanted results
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: number
+          default: 5
+          enum:
+          - 5
+          - 10
+          - 15
+      - name: cuisine
+        in: query
+        description: Wanted cuisine type of recipes
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/Cuisine'
+      - name: diet
+        in: query
+        description: Wanted diet tproperty of recipes
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/Diet'
+      - name: intolerances
+        in: query
+        description: Wanted intolerance property of recipes
+        required: false
+        style: form
+        explode: true
+        schema:
+          $ref: '#/components/schemas/Intolerances'
+      responses:
+        "200":
+          description: return the query result recipes previews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RecipePreview'
+        "400":
+          description: bad input parameter
+      security: []
+components:
+  schemas:
+    LoginRequest:
+      required:
+      - password
+      - username
+      type: object
+      properties:
+        username:
+          type: string
+          example: tomerg
+        password:
+          type: string
+          description: password after sha-256 hashing
+          example: ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f
+    RegisterRequest:
+      required:
+      - country
+      - email
+      - firstname
+      - lastname
+      - password
+      - username
+      type: object
+      properties:
+        username:
+          type: string
+          example: israelLevi34
+        firstname:
+          type: string
+          example: israel
+        lastname:
+          type: string
+          example: Levi
+        country:
+          type: string
+          example: Italy
+        password:
+          type: string
+          example: Password123!
+        email:
+          type: string
+          example: israelLevi@gmail.com
+        profilePicture:
+          type: string
+          format: url
+          example: https://www.acme-corp.com
+    UserInfo:
+      type: object
+      properties:
+        username:
+          type: string
+          example: israelLevi34
+        firstname:
+          type: string
+          example: israel
+        lastname:
+          type: string
+          example: Levi
+        email:
+          type: string
+          example: israelLevi@gmail.com
+        profilePicture:
+          type: string
+          format: url
+          example: https://www.acme-corp.com
+        country:
+          type: string
+          example: Italy
+    Recipe:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 642287
+        title:
+          type: string
+          example: Eggplant Fries with Tzatziki Sauce
+        readyInMinutes:
+          type: number
+          example: 45
+        image:
+          type: string
+          format: url
+          example: https://spoonacular.com/recipeImages/716429-556x370.jpg
+        vegan:
+          type: boolean
+          example: true
+        vegetarian:
+          type: boolean
+          example: true
+        glutenFree:
+          type: boolean
+          example: true
+        aggregateLikes:
+          type: number
+          description: number of like to this recipe
+          example: 49
+        ingredients:
+          type: array
+          items:
+            type: string
+            example: 1 cup bread crumbs
+        extendedIngredients:
+          type: array
+          description: extended ingredients
+          items:
+            $ref: '#/components/schemas/recipeIngredient'
+        instructions:
+          type: string
+          description: full recipe instruction
+          example: |-
+            -Preheat oven to 450F
+            -Mix salt, garlic powder, italian seasonings, and paprika in a bowl.
+            - In another bowl, mix yogurt & egg together.
+            -First place the eggplant strips into egg/yogurt mixture then coat them in flour mixture evenly.
+            -Place them in a parchment paper or greased baking pan and bake for 10-15 minutes rotating once and until slightly brown.
+            For the tzatziki sauce:
+            - In a food processor, put cucumber (seeded, peeled), yogurt, dill, lemon juice, garlic cloves, salt together until smooth.
+        analyzedInstructions:
+          type: array
+          description: analyzed Instructions steps
+          items:
+            $ref: '#/components/schemas/instructionsPhase'
+        servings:
+          type: number
+          description: number of people appropiate for this recipe
+          example: 3
+    RecipePreview:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 642287
+        title:
+          type: string
+          example: Eggplant Fries with Tzatziki Sauce
+        image:
+          type: string
+          format: url
+          example: https://spoonacular.com/recipeImages/716429-556x370.jpg
+        readyInMinutes:
+          type: number
+          example: 45
+        vegan:
+          type: boolean
+          example: true
+        vegetarian:
+          type: boolean
+          example: true
+        glutenFree:
+          type: boolean
+          example: true
+        aggregateLikes:
+          type: number
+          example: 49
+    FamilyRecipe:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1ff110e0-a58f-11ea-b9f4-53bc4ac9380b
+        title:
+          type: string
+          example: Eggplant Fries with Tzatziki Sauce
+        readyInMinutes:
+          type: number
+          example: 45
+        image:
+          type: string
+          format: url
+          example: https://spoonacular.com/recipeImages/716429-556x370.jpg
+        vegan:
+          type: boolean
+          example: true
+        vegetarian:
+          type: boolean
+          example: true
+        glutenFree:
+          type: boolean
+          example: true
+        aggregateLikes:
+          type: number
+          description: number of like to this recipe
+          example: 49
+        ingredients:
+          type: array
+          items:
+            type: string
+            example: 1 cup bread crumbs
+        extendedIngredients:
+          type: array
+          description: extended ingredients
+          items:
+            $ref: '#/components/schemas/recipeIngredient'
+        instructions:
+          type: string
+          description: full recipe instruction
+          example: |-
+            -Preheat oven to 450F
+            -Mix salt, garlic powder, italian seasonings, and paprika in a bowl.
+            - In another bowl, mix yogurt & egg together.
+            -First place the eggplant strips into egg/yogurt mixture then coat them in flour mixture evenly.
+            -Place them in a parchment paper or greased baking pan and bake for 10-15 minutes rotating once and until slightly brown.
+            For the tzatziki sauce:
+            - In a food processor, put cucumber (seeded, peeled), yogurt, dill, lemon juice, garlic cloves, salt together until smooth.
+        analyzedInstructions:
+          type: array
+          description: analyzed Instructions steps
+          items:
+            $ref: '#/components/schemas/instructionsPhase'
+        servings:
+          type: number
+          description: number of people appropiate for this recipe
+          example: 3
+        byWho:
+          type: string
+          example: my grandmother
+        when:
+          type: string
+          example: every friday evening
+    PersonalRecipe:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1ff110e0-a58f-11ea-b9f4-53bc4ac9380b
+        title:
+          type: string
+          example: Eggplant Fries with Tzatziki Sauce
+        readyInMinutes:
+          type: number
+          example: 45
+        image:
+          type: string
+          format: url
+          example: https://spoonacular.com/recipeImages/716429-556x370.jpg
+        vegan:
+          type: boolean
+          example: true
+        vegetarian:
+          type: boolean
+          example: true
+        glutenFree:
+          type: boolean
+          example: true
+        aggregateLikes:
+          type: number
+          description: number of like to this recipe
+          example: 49
+        ingredients:
+          type: array
+          items:
+            type: string
+            example: 1 cup bread crumbs
+        extendedIngredients:
+          type: array
+          description: extended ingredients
+          items:
+            $ref: '#/components/schemas/recipeIngredient'
+        instructions:
+          type: string
+          description: full recipe instruction
+          example: |-
+            -Preheat oven to 450F
+            -Mix salt, garlic powder, italian seasonings, and paprika in a bowl.
+            - In another bowl, mix yogurt & egg together.
+            -First place the eggplant strips into egg/yogurt mixture then coat them in flour mixture evenly.
+            -Place them in a parchment paper or greased baking pan and bake for 10-15 minutes rotating once and until slightly brown.
+            For the tzatziki sauce:
+            - In a food processor, put cucumber (seeded, peeled), yogurt, dill, lemon juice, garlic cloves, salt together until smooth.
+        analyzedInstructions:
+          type: array
+          description: analyzed Instructions steps
+          items:
+            $ref: '#/components/schemas/instructionsPhase'
+        servings:
+          type: number
+          description: number of people appropiate for this recipe
+          example: 3
+    recipesMetaInfo:
+      type: object
+      additionalProperties:
+        required:
+        - favorite
+        - watched
+        type: object
+        properties:
+          watched:
+            type: boolean
+          favorite:
+            type: boolean
+      description: User's info on reciepes. Returns a dictionary of ids as keys, and
+        info as values
+    step:
+      type: object
+      properties:
+        number:
+          type: number
+          example: 1
+        step:
+          type: string
+          example: -Preheat oven to 450F
+    instructionsPhase:
+      type: object
+      properties:
+        name:
+          type: string
+          example: For the tzatziki sauce
+        steps:
+          type: array
+          description: recipe step
+          items:
+            $ref: '#/components/schemas/step'
+    recipeIngredient:
+      type: object
+      properties:
+        name:
+          type: string
+          example: bread crumbs
+        originalString:
+          type: string
+          example: '- 1 cup bread crumbs'
+        amount:
+          type: number
+          example: 1.5
+        unit:
+          type: string
+          example: cup
+    Cuisine:
+      type: string
+      enum:
+      - African
+      - American
+      - British
+      - Cajun
+      - Caribbean
+      - Chinese
+      - Eastern European
+      - European
+      - French
+      - German
+      - Greek
+      - Indian
+      - Irish
+      - Italian
+      - Japanese
+      - Jewish
+      - Korean
+      - Latin American
+      - Mediterranean
+      - Mexican
+      - Middle Eastern
+      - Nordic
+      - Southern
+      - Spanish
+      - Thai
+      - Vietnamese
+    Diet:
+      type: string
+      enum:
+      - Gluten Free
+      - Ketogenic
+      - Vegetarian
+      - Lacto-Vegetarian
+      - Ovo-Vegetarian
+      - Vegan
+      - Pescetarian
+      - Paleo
+      - Primal
+      - Whole30
+    Intolerances:
+      type: string
+      enum:
+      - Dairy
+      - Egg
+      - Gluten
+      - Grain
+      - Peanut
+      - Seafood
+      - Sesame
+      - Shellfish
+      - Soy
+      - Sulfite
+      - Tree Nut
+      - Wheat
+    inline_response_200:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: login succeeded
+    inline_response_200_1:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: logout succeeded
+    inline_response_201:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: user created
+  securitySchemes:
+    cookieUserAuth:
+      type: apiKey
+      name: session
+      in: cookie
