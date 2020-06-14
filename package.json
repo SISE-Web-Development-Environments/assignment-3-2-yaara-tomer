@@ -1,12 +1,11 @@
 {
-  "name": "lab9",
+  "name": "server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start_Task": "nodemon BackEnd/main.js",
+    "start": "node index.js",
     "start_solution": "nodemon codes/solution/main.js",
-    "start": "nodemon codes/solution/main.js"
   },
   "keywords": [],
   "author": "",
