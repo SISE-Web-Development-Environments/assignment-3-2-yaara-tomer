@@ -23,7 +23,14 @@ var app = express();
 var port = process.env.PORT || "3000";
 
 //set cores to all origen
-app.use(cors()); 
+const corsConfig = {
+  origin: true,
+  credentials: true
+};
+
+app.use(cors(corsConfig));
+app.options("*", cors(corsConfig));
+
 //parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
