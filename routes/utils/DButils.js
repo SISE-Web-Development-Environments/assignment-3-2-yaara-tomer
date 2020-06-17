@@ -91,13 +91,13 @@ async function addUserToDB(body) {
   );
 };
 
-async function markRecipeAsWatched(recipeID , username) {
+async function markRecipeAsWatched(recipeID , username, type) {
   // add recipe to watched list. if already exist, update timestamp
   await execQuery(
     `IF EXISTS(select * from Watched where recipe_id='${recipeID}' and username='${username}')
         update Watched set recipe_id='${recipeID}' where recipe_id='${recipeID}' and username='${username}'
     ELSE
-        insert into Watched (recipe_id,username,ts) VALUES ('${recipeID}','${username}',DEFAULT)`
+        insert into Watched (recipe_id,username,ts,type) VALUES ('${recipeID}','${username}',DEFAULT,'${type}')`
   );
 };
 

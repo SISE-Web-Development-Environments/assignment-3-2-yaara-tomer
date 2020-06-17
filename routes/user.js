@@ -167,7 +167,7 @@ router.post("/removeFromFavorite", async (req, res, next) => {
 
 router.post("/markAsWatched", async (req, res, next) => {
   try {
-    await DButils.markRecipeAsWatched(req.query.id, req.username);
+    await DButils.markRecipeAsWatched(req.query.id, req.username,req.query.type);
     res.sendStatus(200);
   } catch (error) {
     //ignore error if its duplicate request (recipe already watched)
