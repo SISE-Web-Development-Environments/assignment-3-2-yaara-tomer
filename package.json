@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start_Task": "nodemon BackEnd/main.js",
-    "start_solution": "nodemon codes/solution/main.js",
-    "start": "nodemon codes/solution/main.js"
+    "start": "node index.js",
+    "start_solution": "nodemon codes/solution/main.js"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +15,7 @@
     "bcrypt": "^4.0.1",
     "client-sessions": "^0.8.0",
     "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
     "crypto-js": "^4.0.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",

@@ -18,7 +18,7 @@ router.get("/randomRecipesPreview", async (req, res, next) => {
 
 router.get("/fullRecipeByid", async (req, res, next) => {
   try {
-    let recipe = await recipeUtils.getFullRecipeById(req.query.id);
+    let recipe = await recipeUtils.getFullRecipeById(req.query.id);    
     res.status(200).send(recipe);
   } catch (error) {
     next(error);
