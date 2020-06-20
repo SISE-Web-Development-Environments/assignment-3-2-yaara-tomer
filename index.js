@@ -71,7 +71,8 @@ app.use((req,res) => {
 
 app.use(function (err, req, res, next) {
   console.error(err);
-  res.status(err.status || 500).send({ message: "Server Error", success: false });
+  let msg = (err.message || "Server Error");
+  res.status(err.status || 500).send({ message: msg, success: false });
 });
 
 const server = app.listen(port, () => {
