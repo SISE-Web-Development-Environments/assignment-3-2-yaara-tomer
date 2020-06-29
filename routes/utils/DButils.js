@@ -237,8 +237,8 @@ process.on("SIGINT", function () {
   }
 });
 
-exports.getPersonalRecipesPreview = getAllPersonalRecipesPreview;
-exports.getFamilyRecipesPreview = getAllFamilyRecipesPreview;
+exports.getAllPersonalRecipesPreview = getAllPersonalRecipesPreview;
+exports.getAllFamilyRecipesPreview = getAllFamilyRecipesPreview;
 exports.getFamilyRecipeByID = getFamilyRecipeByID;
 exports.addPersonalRecipeToDB = addPersonalRecipeToDB;
 exports.getPersonalRecipeByID = getPersonalRecipeByID;
