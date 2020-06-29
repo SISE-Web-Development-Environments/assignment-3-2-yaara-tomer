@@ -61,7 +61,8 @@ async function getRecipePreview(recipe_id) {
     }
   );
 
-  return extractPreviewFromFullRecipe(getRecipe_response.data);
+  let preview = await extractPreviewFromFullRecipe(getRecipe_response.data);
+  return preview;
 }
 
 async function getFullRecipeById(recipe_id) {
@@ -99,6 +100,7 @@ async function extractPreviewFromFullRecipe(recipe) {
     vegetarian: vegetarian,
     glutenFree: glutenFree,
     aggregateLikes: aggregateLikes,
+    type:'r'
   };
 }
 
@@ -145,6 +147,7 @@ async function extractFullRecipe(recipe) {
     instructions: instructions,
     analyzedInstructions: RelevantanalyzedInstructionsData,
     servings: servings,
+    type:'r'
   };
 }
 
