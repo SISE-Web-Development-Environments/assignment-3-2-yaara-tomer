@@ -44,7 +44,7 @@ app.use(
     cookieName: "session", // the cookie key name
     secret: process.env.COOKIE_SECRET, // the encryption key
     duration: 30 * 60 * 1000, // expired after 30 minutes
-    activeDuration: 0, // if expiresIn < activeDuration,
+    activeDuration: 3 * 60 * 1000, // if expiresIn < activeDuration,
     //the session will be extended by activeDuration milliseconds
   })
 );

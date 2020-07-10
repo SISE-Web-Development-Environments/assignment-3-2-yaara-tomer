@@ -99,7 +99,12 @@ async function getlastWatchedRecipesIDs(username) {
 }
 
 async function addRecipeToFavorite(username, recipeid) {
-  await execQuery(`INSERT INTO Favorite VALUES ('${recipeid}','${username}')`);
+  try{
+    await execQuery(`INSERT INTO Favorite VALUES ('${recipeid}','${username}')`);
+
+  }catch{
+    
+  }
 }
 
 async function removeRecipeFromFavorite(username, recipeid) {
